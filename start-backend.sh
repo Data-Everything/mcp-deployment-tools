@@ -6,7 +6,7 @@
 cd "$(dirname "$0")/../backend"
 
 if [ ! -f .env ]; then
-    echo "❌ .env file not found. Please run './dev.sh start' first."
+    echo "❌ .env file not found. Please run './scripts/dev.sh start' first."
     exit 1
 fi
 
