@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-platform-website
+  namespace: production-external
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mcp-platform-website
+  template:
+    metadata:
+      labels:
+        app: mcp-platform-website
+    spec:
+      containers:
+      - name: mcp-platform-website
+        imagePullPolicy: Always
+        image: dataeverythingproductionaks.azurecr.io/mcp-platform-website:production
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            memory: "0.25Gi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-platform-website
+  namespace: production-external
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 8000
+
+  selector:
+    app: mcp-platform-website
