@@ -1,19 +1,6 @@
 #!/bin/bash
 
-# Development        echo "🔧 Setting up database..."
-        cd backend
-        if [ ! -d "venv" ]; then
-            echo "❌ Virtual environment not found. Please run ./setup.sh first."
-            exit 1
-        fi
-
-        echo "📦 Installing/updating development dependencies..."
-        source venv/bin/activate
-        pip install -r requirements_dev.txt > /dev/null 2>&1
-
-        export DATABASE_URL="postgresql://mcp_user:mcp_password@localhost:$DB_PORT/mcp_platform"
-        export REDIS_URL="redis://localhost:$REDIS_PORT/0"
-        python manage.py migrateipt for MCP Platform
+# Development script for MCP Platform
 
 set -e
 
@@ -33,24 +20,34 @@ case "$1" in
         DB_PORT=$(docker compose -f docker-compose.dev.yml port db 5432 | cut -d: -f2)
         REDIS_PORT=$(docker compose -f docker-compose.dev.yml port redis 6379 | cut -d: -f2)
 
-        echo "� Service ports:"
+        echo "🌐 Service ports:"
         echo "   PostgreSQL: localhost:$DB_PORT"
         echo "   Redis: localhost:$REDIS_PORT"
 
-        echo "�🔧 Setting up database..."
+        echo "🔧 Setting up database..."
         cd backend
         if [ ! -d "venv" ]; then
             echo "❌ Virtual environment not found. Please run ./setup.sh first."
             exit 1
         fi
 
+        echo "📦 Installing/updating development dependencies..."
         source venv/bin/activate
+        pip install -r requirements_dev.txt > /dev/null 2>&1
+
         export DATABASE_URL="postgresql://mcp_user:mcp_password@localhost:$DB_PORT/mcp_platform"
         export REDIS_URL="redis://localhost:$REDIS_PORT/0"
         python manage.py migrate
 
-        echo "📊 Loading MCP server templates..."
-        python manage.py load_templates ../templates/
+        echo "� Creating demo users..."
+        python manage.py create_demo_users
+
+        echo "�📊 Loading MCP server templates..."
+        if [ -d "../templates/" ]; then
+            python manage.py load_templates ../templates/
+        else
+            echo "⚠️  Templates directory not found, skipping template loading"
+        fi
 
         # Create .env file with dynamic ports for development
         echo "📝 Creating .env file with dynamic ports..."
@@ -64,6 +61,9 @@ EOF
         echo ""
         echo "✅ Development environment is ready!"
         echo ""
+        echo "🔑 Login Credentials:"
+        echo "   Demo User: demo/demo123 (use this for frontend testing)"
+        echo ""
         echo "🎯 Next steps:"
         echo "1. Start Django backend:"
         echo "   scripts/start-backend.sh"
@@ -74,7 +74,7 @@ EOF
         echo "3. Access the application:"
         echo "   - Frontend: http://localhost:3000"
         echo "   - Backend API: http://localhost:8000"
-        echo "   - Django Admin: http://localhost:8000/admin"
+        echo "   - Django Admin: http://localhost:8000/admin (admin access only)"
         ;;
 
     "stop")

@@ -75,11 +75,24 @@ docker compose run --rm backend python manage.py migrate
 echo "👤 Creating Django superuser..."
 docker compose run --rm backend python manage.py shell -c "
 from authentication.models import User
+import os
+from django.core.management.utils import get_random_secret_key
+
+# Create superuser with secure password
 if not User.objects.filter(username='admin').exists():
-    User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
-    print('Superuser created: admin/admin123')
+    admin_password = os.environ.get('ADMIN_PASSWORD', get_random_secret_key()[:16])
+    User.objects.create_superuser('admin', 'admin@example.com', admin_password)
+    print(f'Superuser created: admin/{admin_password}')
+    print('⚠️  IMPORTANT: Save this admin password securely!')
 else:
     print('Superuser already exists')
+
+# Create demo user for frontend testing
+if not User.objects.filter(username='demo').exists():
+    User.objects.create_user('demo', 'demo@example.com', 'demo123', first_name='Demo', last_name='User')
+    print('Demo user created: demo/demo123')
+else:
+    print('Demo user already exists')
 "
 
 # Load MCP server templates
@@ -97,8 +110,12 @@ echo ""
 echo "Your **FULL DOCKER ENVIRONMENT** is now set up with:"
 echo "✅ PostgreSQL database (postgres_data volume)"
 echo "✅ Redis cache (redis_data volume)"
-echo "✅ Database migrated and superuser created (admin/admin123)"
+echo "✅ Database migrated with admin and demo users created"
 echo "✅ MCP server templates loaded"
+echo ""
+echo "🔑 User Accounts:"
+echo "   Demo User: demo/demo123 (for frontend testing)"
+echo "   Admin User: Check terminal output above for secure password"
 echo ""
 echo "🚀 Choose your development mode:"
 echo ""

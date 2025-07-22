@@ -7,7 +7,7 @@ This directory contains all management scripts for the MCP Platform project.
 ### 🚀 `setup.sh`
 **Purpose**: Initial project setup for full Docker environment
 - Sets up the complete Docker environment with `postgres_data` volume
-- Runs database migrations and creates superuser (admin/admin123)
+- Runs database migrations and creates demo user (demo/demo123) and secure admin user
 - Loads MCP server templates
 - Installs frontend dependencies
 - Best for: Initial setup and production-like testing
