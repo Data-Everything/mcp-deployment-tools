@@ -1,76 +1,120 @@
-# MCP Platform Scripts
+# MCP Deployment Tools
 
-This directory contains all management scripts for the MCP Platform project.
+Open source deployment utilities for self-hosting Model Context Protocol (MCP) servers.
 
-## Scripts Overview
+## 🚀 What's Included
 
-### 🚀 `setup.sh`
-**Purpose**: Initial project setup for full Docker environment
-- Sets up the complete Docker environment with `postgres_data` volume
-- Runs database migrations and creates demo user (demo/demo123) and secure admin user
-- Loads MCP server templates
-- Installs frontend dependencies
-- Best for: Initial setup and production-like testing
+- **Docker Compose** - Quick local development setup
+- **Kubernetes** - Production-ready manifests  
+- **Scripts** - Deployment automation tools
+- **Documentation** - Self-hosting guides
 
-**Usage**:
+## 📋 Quick Start
+
+### Option 1: Docker Compose (Recommended for Development)
+
 ```bash
-scripts/setup.sh
+# Clone this repo
+git clone https://github.com/Data-Everything/mcp-deployment-tools.git
+cd mcp-deployment-tools
+
+# Get MCP server templates
+git clone https://github.com/Data-Everything/mcp-server-templates.git templates
+
+# Start services
+cd docker
+docker-compose up -d
 ```
 
-### 🔧 `dev.sh`
-**Purpose**: Hybrid development environment management
-- Uses `postgres_dev_data` volume (separate from full Docker)
-- Infrastructure in Docker, application code runs locally
-- Supports dynamic port assignment to avoid conflicts
-- Best for: Active development and debugging
+### Option 2: Kubernetes (Production)
 
-**Usage**:
 ```bash
-scripts/dev.sh start     # Start infrastructure services
-scripts/dev.sh stop      # Stop all services
-scripts/dev.sh restart   # Restart services
-scripts/dev.sh logs      # Show service logs
-scripts/dev.sh clean     # Clean up (removes volumes)
+# Apply Kubernetes manifests
+kubectl apply -f kubernetes/
+
+# Check deployment status
+kubectl get pods -l app=mcp-server
 ```
 
-### 🐍 `start-backend.sh`
-**Purpose**: Start Django backend with proper environment variables
-- Automatically loads `.env` file with dynamic ports
-- Activates virtual environment
-- Starts Django development server
-- Must be run after `scripts/dev.sh start`
+### Option 3: Manual Scripts
 
-**Usage**:
 ```bash
-scripts/start-backend.sh
+# Run setup script
+./scripts/setup.sh
+
+# Deploy servers
+./scripts/deploy.sh
 ```
 
-## Development Workflows
+## 📁 Repository Structure
 
-### Full Docker Development
-```bash
-# Initial setup
-scripts/setup.sh
-
-# Start everything
-docker compose up --build
+```
+mcp-deployment-tools/
+├── docker/
+│   └── docker-compose.yml     # Local development stack
+├── kubernetes/
+│   ├── deployment.yaml        # K8s deployment
+│   ├── ingress.yaml          # Ingress configuration
+│   └── secrets.yaml          # Secret templates
+├── scripts/
+│   ├── setup.sh              # Environment setup
+│   ├── deploy.sh             # Deployment script
+│   └── dev.sh                # Development helpers
+└── docs/
+    └── self-hosting.md        # Detailed guides
 ```
 
-### Hybrid Development (Recommended)
-```bash
-# Start infrastructure
-scripts/dev.sh start
+## 🛠️ Use Cases
 
-# Start backend (in one terminal)
-scripts/start-backend.sh
+### Self-Hosting Individual Servers
+- Deploy specific MCP servers (GitHub, Slack, etc.)
+- Full control over your infrastructure
+- No vendor dependencies
 
-# Start frontend (in another terminal)
-cd frontend && npm run dev
-```
+### Development Environment
+- Local testing of MCP integrations
+- Template development and debugging
+- AI assistant integration testing
 
-## Data Storage
+### Production Deployment
+- Kubernetes-ready manifests
+- Security best practices included
+- Monitoring and logging setup
 
-- **Full Docker**: Uses `postgres_data` and `redis_data` volumes
-- **Hybrid Development**: Uses `postgres_dev_data` and `redis_dev_data` volumes
+## 🔗 Related Projects
 
-This separation allows you to switch between development modes without losing data.
+- **[MCP Server Templates](https://github.com/Data-Everything/mcp-server-templates)** - Open source MCP server implementations
+- **[MCP Platform](https://mcp-platform.dataeverything.ai)** - Managed hosting with enterprise features
+- **[MCP Protocol](https://spec.modelcontextprotocol.io/)** - Official specification
+
+## 💡 Why Self-Host vs. Managed Platform?
+
+**Self-Hosting (This Repo):**
+- ✅ Full control and customization
+- ✅ No vendor lock-in
+- ✅ Use your own infrastructure
+- ❌ You manage security, updates, monitoring
+- ❌ Setup and maintenance overhead
+
+**[MCP Platform](https://mcp-platform.dataeverything.ai) (Managed):**
+- ✅ Zero infrastructure management
+- ✅ Enterprise security and compliance
+- ✅ Team collaboration features
+- ✅ Professional support
+- ❌ Monthly subscription cost
+
+Choose based on your needs: self-host for maximum control, use the platform for convenience and enterprise features.
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](./CONTRIBUTING.md).
+
+## 📄 License
+
+MIT License - see [LICENSE](./LICENSE) file for details.
+
+## 📞 Support
+
+- **Community Support**: [GitHub Issues](https://github.com/Data-Everything/mcp-deployment-tools/issues)
+- **Documentation**: [Self-Hosting Guide](./docs/self-hosting.md)
+- **Enterprise Support**: Available through [MCP Platform](https://mcp-platform.dataeverything.ai)
