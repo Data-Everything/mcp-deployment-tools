@@ -6,47 +6,101 @@ Open source deployment utilities for self-hosting Model Context Protocol (MCP) s
 
 - **Docker Compose** - Quick local development setup
 - **Kubernetes** - Production-ready manifests  
-- **Scripts** - Deployment automation tools
+- **Scripts** - Server deployment and management tools
 - **Documentation** - Self-hosting guides
 
 ## 📋 Quick Start
 
-### Option 1: Docker Compose (Recommended for Development)
+### Option 1: Docker Deployment (Recommended)
 
 ```bash
 # Clone this repo
 git clone https://github.com/Data-Everything/mcp-deployment-tools.git
 cd mcp-deployment-tools
 
-# Get MCP server templates
-git clone https://github.com/Data-Everything/mcp-server-templates.git templates
+# Setup infrastructure
+./scripts/setup-infrastructure.sh --type docker
 
-# Start services
-cd docker
-docker-compose up -d
+# Deploy an MCP server
+./scripts/deploy.sh --type docker --template file-server --name my-files
+
+# Manage servers
+./scripts/manage-servers.sh list
+./scripts/manage-servers.sh status --name my-files
 ```
 
 ### Option 2: Kubernetes (Production)
 
 ```bash
-# Apply Kubernetes manifests
-kubectl apply -f kubernetes/
+# Setup Kubernetes infrastructure
+./scripts/setup-infrastructure.sh --type kubernetes --namespace mcp-platform
 
-# Check deployment status
-kubectl get pods -l app=mcp-server
+# Deploy an MCP server
+./scripts/deploy.sh --type kubernetes --template database --name db-server
+
+# Manage servers
+./scripts/manage-servers.sh list --type kubernetes
+./scripts/manage-servers.sh logs --name db-server --type kubernetes --follow
 ```
 
-### Option 3: Manual Scripts
+### Option 3: Docker Compose (Development)
 
 ```bash
-# Run setup script
-./scripts/setup.sh
+# Use pre-configured docker-compose
+cd docker
+docker-compose up -d
+## 📁 Repository Structure
 
-# Deploy servers
-./scripts/deploy.sh
+```
+mcp-deployment-tools/
+├── scripts/                    # Deployment and management scripts
+│   ├── deploy.sh              # Deploy MCP servers
+│   ├── manage-servers.sh      # Start, stop, restart, logs
+│   └── setup-infrastructure.sh # Infrastructure setup
+├── docker/                    # Docker Compose configurations
+│   └── docker-compose.yml     # Quick development setup
+├── kubernetes/                # Kubernetes manifests
+│   ├── deployment.yaml        # Server deployment template
+│   ├── service.yaml          # Service configurations
+│   └── ingress.yaml          # Ingress setup
+└── docs/                     # Documentation
+    └── self-hosting.md       # Self-hosting guide
 ```
 
-## 📁 Repository Structure
+## �️ Scripts Reference
+
+### Infrastructure Setup
+```bash
+# Docker environment
+./scripts/setup-infrastructure.sh --type docker
+
+# Kubernetes environment with custom namespace
+./scripts/setup-infrastructure.sh --type kubernetes --namespace my-mcp
+```
+
+### Server Deployment
+```bash
+# Deploy with configuration file
+./scripts/deploy.sh --type docker --template file-server --name my-files --config config.json
+
+# Deploy to Kubernetes
+./scripts/deploy.sh --type kubernetes --template github --name github-server
+```
+
+### Server Management
+```bash
+# List all servers
+./scripts/manage-servers.sh list
+
+# Check server status
+./scripts/manage-servers.sh status --name my-files
+
+# View logs (follow mode)
+./scripts/manage-servers.sh logs --name my-files --follow
+
+# Restart server
+./scripts/manage-servers.sh restart --name my-files
+```
 
 ```
 mcp-deployment-tools/
